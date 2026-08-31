@@ -157,4 +157,40 @@ document.addEventListener("DOMContentLoaded", () => {
             if (e.key === "ArrowRight") showImage(currentIndex + 1);
         });
     }
+    document.addEventListener("DOMContentLoaded", function () {
+        const abaBtn = document.getElementById("openAbaBtn");
+        const amountInput = document.getElementById("donationAmount");
+
+        if (abaBtn) {
+            abaBtn.addEventListener("click", function () {
+                const amount = parseFloat(amountInput.value);
+
+                if (isNaN(amount) || amount <= 0) {
+                    alert("Please enter a valid donation amount.");
+                    return;
+                }
+
+                // USD Merchant Account Number
+                const merchantAccount = "018986181";
+
+                // Standard Bakong KHQR Mobile Deeplink Schema
+                const bakongDeepLink = `https://bakong.page.link/pay?account=${merchantAccount}&amount=${amount}&currency=USD`;
+
+                // Check if running on mobile device (iOS/Android)
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+                    navigator.userAgent
+                );
+
+                if (isMobile) {
+                    // Redirect directly to open ABA / Bakong Mobile App with pre-filled amount
+                    window.location.href = bakongDeepLink;
+                } else {
+                    // Desktop fallback notification
+                    alert(
+                        `Deep linking requires a mobile device. Please scan the QR code using your ABA app and enter $${amount.toFixed(2)} USD manually.`
+                    );
+                }
+            });
+        }
+    });
 });

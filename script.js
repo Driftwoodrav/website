@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ABA Mobile App Trigger (Bakong Universal Link)
+  // ABA Mobile App Trigger (Official Bakong Web Endpoint)
   const abaBtn = document.getElementById("openAbaBtn");
   const amountInput = document.getElementById("donationAmount");
 
@@ -40,12 +40,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Account details for CHANNIZA LONG (USD)
       const accountNo = "018986181";
+      const accountName = "CHANNIZA LONG";
 
-      // Bakong Universal Deep Link Endpoint
-      const bakongUrl = `https://bakong.page.link/pay?account=${accountNo}&amount=${amount.toFixed(2)}&currency=USD`;
+      // Official Bakong Web Endpoint (Fixes "Dynamic Link Not Found" error)
+      const bakongPayUrl = `https://km.bakong.nbc.gov.kh/pay?account=${accountNo}&amount=${amount.toFixed(2)}&currency=USD&name=${encodeURIComponent(accountName)}`;
 
-      // Redirect to Bakong universal deep link
-      window.location.href = bakongUrl;
+      // Redirect to Bakong payment page
+      window.location.href = bakongPayUrl;
     });
   }
 });

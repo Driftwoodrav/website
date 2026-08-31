@@ -158,3 +158,49 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Mobile Navigation Toggle
+  const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+  const navLinks = document.getElementById("navLinks");
+
+  if (mobileMenuBtn && navLinks) {
+    mobileMenuBtn.addEventListener("click", function () {
+      navLinks.classList.toggle("active");
+      const expanded = mobileMenuBtn.getAttribute("aria-expanded") === "true" || false;
+      mobileMenuBtn.setAttribute("aria-expanded", !expanded);
+    });
+  }
+
+  // Gallery Image Lightbox (Enlarge on click)
+  const lightbox = document.getElementById("imageLightbox");
+  const lightboxImg = document.getElementById("lightboxImg");
+  const closeBtn = document.getElementById("closeLightbox");
+  
+  // Select all images inside gallery cards/containers
+  const galleryImages = document.querySelectorAll(".gallery-card img, .gallery-item img, .gallery-grid img");
+
+  if (lightbox && lightboxImg) {
+    galleryImages.forEach(img => {
+      img.style.cursor = "pointer";
+      img.addEventListener("click", function () {
+        lightboxImg.src = this.src;
+        lightboxImg.alt = this.alt || "Gallery Image";
+        lightbox.style.display = "flex";
+      });
+    });
+
+    // Close modal when clicking the close button or outside the image
+    if (closeBtn) {
+      closeBtn.addEventListener("click", function () {
+        lightbox.style.display = "none";
+      });
+    }
+
+    lightbox.addEventListener("click", function (e) {
+      if (e.target !== lightboxImg) {
+        lightbox.style.display = "none";
+      }
+    });
+  }
+});

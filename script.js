@@ -1,196 +1,59 @@
-document.addEventListener("DOMContentLoaded", () => {
-    // --- Mobile Navigation Menu ---
+document.addEventListener("DOMContentLoaded", function () {
+    // Mobile Navigation Toggle
     const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-    const navRightContainer = document.querySelector(".nav-right-container");
+    const navLinks = document.getElementById("navLinks");
 
-    if (mobileMenuBtn && navRightContainer) {
-        mobileMenuBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            navRightContainer.classList.toggle("active");
-        });
-
-        document.addEventListener("click", (e) => {
-            if (
-                navRightContainer.classList.contains("active") &&
-                !navRightContainer.contains(e.target) &&
-                !mobileMenuBtn.contains(e.target)
-            ) {
-                navRightContainer.classList.remove("active");
-            }
+    if (mobileMenuBtn && navLinks) {
+        mobileMenuBtn.addEventListener("click", function () {
+            navLinks.classList.toggle("active");
+            const expanded = mobileMenuBtn.getAttribute("aria-expanded") === "true" || false;
+            mobileMenuBtn.setAttribute("aria-expanded", !expanded);
         });
     }
-    // --- Donation Page Interactive Logic ---
-    const amountBtns = document.querySelectorAll(".amount-btn");
-    const customAmountInput = document.getElementById("customAmount");
-    const btnAmountText = document.getElementById("btnAmountText");
-    const paymentOptions = document.querySelectorAll(".payment-option");
-    const donationForm = document.getElementById("donationForm");
-    const thankYouModal = document.getElementById("thankYouModal");
-    const closeModalBtn = document.getElementById("closeModalBtn");
 
-    if (donationForm) {
-        // Sync amount buttons with custom input & button text
-        amountBtns.forEach((btn) => {
-            btn.addEventListener("click", () => {
-                amountBtns.forEach((b) => b.classList.remove("active"));
-                btn.classList.add("active");
+    // ABA Mobile App Trigger
+    const abaBtn = document.getElementById("openAbaBtn");
+    const amountInput = document.getElementById("donationAmount");
 
-                const val = btn.getAttribute("data-amount");
-                if (customAmountInput) customAmountInput.value = val;
-                if (btnAmountText) btnAmountText.textContent = val;
-            });
-        });
-
-        if (customAmountInput) {
-            customAmountInput.addEventListener("input", (e) => {
-                amountBtns.forEach((b) => b.classList.remove("active"));
-                const val = e.target.value || 0;
-                if (btnAmountText) btnAmountText.textContent = val;
-            });
-        }
-
-        // Toggle Payment Option Active State
-        paymentOptions.forEach((option) => {
-            option.addEventListener("click", () => {
-                paymentOptions.forEach((o) => o.classList.remove("active"));
-                option.classList.add("active");
-                const radio = option.querySelector("input[type='radio']");
-                if (radio) radio.checked = true;
-            });
-        });
-
-        // Handle Form Submit
-        donationForm.addEventListener("submit", (e) => {
+    if (abaBtn) {
+        abaBtn.addEventListener("click", function (e) {
             e.preventDefault();
-            if (thankYouModal) {
-                thankYouModal.classList.add("active");
+
+            const rawAmount = amountInput ? amountInput.value : "";
+            const amount = parseFloat(rawAmount);
+
+            if (isNaN(amount) || amount <= 0) {
+                alert("Please enter a valid donation amount.");
+                return;
             }
-        });
 
-        if (closeModalBtn) {
-            closeModalBtn.addEventListener("click", () => {
-                thankYouModal.classList.remove("active");
-                donationForm.reset();
-                btnAmountText.textContent = "5";
-                amountBtns[0].click();
-            });
-        }
-    }
-    // --- Lightbox Modal Logic ---
-    const galleryImages = Array.from(document.querySelectorAll(".gallery-img"));
-    const lightboxModal = document.getElementById("lightboxModal");
-    const lightboxImg = document.getElementById("lightboxImg");
-    const lightboxClose = document.getElementById("lightboxClose");
-    const lightboxPrev = document.getElementById("lightboxPrev");
-    const lightboxNext = document.getElementById("lightboxNext");
+            // Check if user is on iOS or Android mobile device
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            const isAndroid = /android/i.test(userAgent);
+            const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
 
-    let currentIndex = 0;
-
-    if (lightboxModal && lightboxImg && galleryImages.length > 0) {
-        // Function to show image at specific index
-        const showImage = (index) => {
-            if (index < 0) {
-                currentIndex = galleryImages.length - 1;
-            } else if (index >= galleryImages.length) {
-                currentIndex = 0;
-            } else {
-                currentIndex = index;
-            }
-            const targetImg = galleryImages[currentIndex];
-            lightboxImg.src = targetImg.src;
-            lightboxImg.alt = targetImg.alt || "Enlarged photo";
-        };
-
-        // Open lightbox when clicking any gallery image
-        galleryImages.forEach((img, idx) => {
-            img.addEventListener("click", (e) => {
-                e.stopPropagation();
-                showImage(idx);
-                lightboxModal.classList.add("active");
-                document.body.style.overflow = "hidden"; // Prevent background scrolling
-            });
-        });
-
-        // Close Lightbox
-        const closeLightbox = () => {
-            lightboxModal.classList.remove("active");
-            document.body.style.overflow = ""; // Restore scrolling
-        };
-
-        // Close button click
-        if (lightboxClose) {
-            lightboxClose.addEventListener("click", (e) => {
-                e.stopPropagation();
-                closeLightbox();
-            });
-        }
-
-        // Prev button click
-        if (lightboxPrev) {
-            lightboxPrev.addEventListener("click", (e) => {
-                e.stopPropagation();
-                showImage(currentIndex - 1);
-            });
-        }
-
-        // Next button click
-        if (lightboxNext) {
-            lightboxNext.addEventListener("click", (e) => {
-                e.stopPropagation();
-                showImage(currentIndex + 1);
-            });
-        }
-
-        // Close when clicking directly on dark backdrop (outside controls/image)
-        lightboxModal.addEventListener("click", (e) => {
-            if (e.target === lightboxModal) {
-                closeLightbox();
-            }
-        });
-
-        // Keyboard Controls (Left, Right, Escape)
-        document.addEventListener("keydown", (e) => {
-            if (!lightboxModal.classList.contains("active")) return;
-
-            if (e.key === "Escape") closeLightbox();
-            if (e.key === "ArrowLeft") showImage(currentIndex - 1);
-            if (e.key === "ArrowRight") showImage(currentIndex + 1);
-        });
-    }
-    document.addEventListener("DOMContentLoaded", function () {
-        const abaBtn = document.getElementById("openAbaBtn");
-        const amountInput = document.getElementById("donationAmount");
-
-        if (abaBtn) {
-            abaBtn.addEventListener("click", function () {
-                const amount = parseFloat(amountInput.value);
-
-                if (isNaN(amount) || amount <= 0) {
-                    alert("Please enter a valid donation amount.");
-                    return;
-                }
-
-                // USD Merchant Account Number
-                const merchantAccount = "018986181";
-
-                // Standard Bakong KHQR Mobile Deeplink Schema
-                const bakongDeepLink = `https://bakong.page.link/pay?account=${merchantAccount}&amount=${amount}&currency=USD`;
-
-                // Check if running on mobile device (iOS/Android)
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-                    navigator.userAgent
+            if (!isAndroid && !isIOS) {
+                alert(
+                    `Mobile device required. Please scan the KHQR code below using your ABA app and enter $${amount.toFixed(2)} USD manually.`
                 );
+                return;
+            }
 
-                if (isMobile) {
-                    // Redirect directly to open ABA / Bakong Mobile App with pre-filled amount
-                    window.location.href = bakongDeepLink;
-                } else {
-                    // Desktop fallback notification
-                    alert(
-                        `Deep linking requires a mobile device. Please scan the QR code using your ABA app and enter $${amount.toFixed(2)} USD manually.`
-                    );
+            // ABA Custom App Scheme & Universal Link Fallback
+            // Direct deep link format used by Cambodian banking links
+            const abapyScheme = `abamobilebank://pay?account=018986181&amount=${amount.toFixed(2)}&currency=USD`;
+            const fallbackUrl = `https://m.abahouse.com/pay?account=018986181&amount=${amount.toFixed(2)}&currency=USD`;
+
+            // Try launching ABA via direct custom scheme
+            const startTime = Date.now();
+            window.location.href = abapyScheme;
+
+            // Fallback redirect if the app is not installed or scheme fails within 1.5 seconds
+            setTimeout(function () {
+                if (Date.now() - startTime < 2000) {
+                    window.location.href = fallbackUrl;
                 }
-            });
-        }
-    });
+            }, 1500);
+        });
+    }
 });

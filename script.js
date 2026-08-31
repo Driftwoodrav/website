@@ -16,19 +16,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (abaBtn) {
     abaBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-
-      // Check if user is viewing on an iOS or Android mobile device
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
       const isMobile = /Android|iPhone|iPad|iPod/i.test(userAgent);
 
       if (!isMobile) {
-        alert("Mobile device required. Please open this page on your phone to launch the ABA app, or scan the KHQR code below.");
-        return;
+        e.preventDefault();
+        alert("Mobile device required. Please open this page on your mobile phone to launch the ABA Mobile app, or scan the KHQR code below.");
       }
-
-      // Deep link to open the ABA Mobile app directly on iOS/Android
-      window.location.href = "abamobilebank://";
+      // On mobile devices, the native link click propagates to invoke the 'abamobilebank://' scheme cleanly.
     });
   }
 });

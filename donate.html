@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Donate - SharingSmilesCharity</title>
-        <link rel="stylesheet" href="styles.css" />
+        <link rel="stylesheet" href="styles.css?v=5.0" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     </head>
     <body>
@@ -64,12 +64,12 @@
                             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
                             text-align: center;
                         ">
-                        <h3 style="margin-bottom: 0.5rem; color: #1a1a1a; font-size: 1.5rem">Scan with KHQR</h3>
+                        <h3 style="margin-bottom: 0.5rem; color: #1a1a1a; font-size: 1.5rem">Scan or Pay with ABA</h3>
                         <p style="color: #666; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5">
-                            Enter an amount to open in your banking app, or scan the KHQR code below.
+                            Tap below to open your ABA Mobile app, or scan the KHQR code directly.
                         </p>
 
-                        <!-- Input & Button to Trigger ABA Mobile Deep Link -->
+                        <!-- Direct App Deep Link Group -->
                         <div class="donate-input-group" style="margin-bottom: 1.5rem; text-align: left;">
                             <label for="donationAmount" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">
                                 Enter Amount (USD):
@@ -83,13 +83,13 @@
                                     step="0.5" 
                                     style="flex: 1; padding: 0.75rem 1rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem;"
                                 />
-                                <button id="openAbaBtn" class="btn btn-primary" style="white-space: nowrap;">
-                                    <i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i> Open in ABA App
-                                </button>
+                                <a id="openAbaBtn" href="abamobilebank://" class="btn btn-primary" style="white-space: nowrap; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-mobile-screen-button" aria-hidden="true" style="margin-right: 6px;"></i> Open ABA App
+                                </a>
                             </div>
                         </div>
 
-                        <!-- Clean Wrapper (No background, no shadow, no fixed dimensions) -->
+                        <!-- KHQR Wrapper -->
                         <div
                             class="qr-wrapper"
                             style="
@@ -143,8 +143,8 @@
                                 <strong>USD Account:</strong> 018 986 181
                             </p>
                         </div>
-                    </div> <!-- Added missing close tag for .donate-container -->
-                </div> <!-- Added missing close tag for .container -->
+                    </div>
+                </div>
             </section>
         </main>
 
@@ -153,6 +153,6 @@
             <p>&copy; 2026 SharingSmilesCharity. Brought to you by CamEd Business School. All rights reserved.</p>
         </footer>
 
-        <script src="script.js?v=3.1"></script>
+        <script src="script.js?v=4.0"></script>
     </body>
 </html>

@@ -1,242 +1,160 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>SharingSmilesCharity</title>
-        <link rel="stylesheet" href="styles.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    </head>
-    <body>
-        <!-- Navigation Bar -->
-        <nav class="navbar" aria-label="Main Navigation">
-            <div class="logo-container">
-                <img src="images/charity-logo.png" alt="SharingSmiles Charity Logo" class="brand-logo" />
-                <div class="logo-divider" role="separator"></div>
-                <img src="images/camed-logo.png" alt="CamEd Business School Logo" class="brand-logo" />
-            </div>
+document.addEventListener("DOMContentLoaded", () => {
+    // --- Mobile Navigation Menu ---
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+    const navRightContainer = document.querySelector(".nav-right-container");
 
-            <button
-                class="menu-toggle"
-                id="mobileMenuBtn"
-                aria-label="Toggle Navigation Menu"
-                aria-expanded="false"
-                aria-controls="navLinks">
-                <i class="fa-solid fa-bars" aria-hidden="true"></i>
-            </button>
+    if (mobileMenuBtn && navRightContainer) {
+        mobileMenuBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            navRightContainer.classList.toggle("active");
+        });
 
-            <div class="nav-right-container">
-                <ul class="nav-links" id="navLinks">
-                    <li><a href="#home" class="nav-item">Home</a></li>
-                    <li><a href="#about" class="nav-item">More About Us</a></li>
-                    <li><a href="#schools" class="nav-item">Schools We Help</a></li>
-                    <li><a href="#contact" class="nav-item">Contact Us</a></li>
-                </ul>
+        document.addEventListener("click", (e) => {
+            if (
+                navRightContainer.classList.contains("active") &&
+                !navRightContainer.contains(e.target) &&
+                !mobileMenuBtn.contains(e.target)
+            ) {
+                navRightContainer.classList.remove("active");
+            }
+        });
+    }
+    // --- Donation Page Interactive Logic ---
+    const amountBtns = document.querySelectorAll(".amount-btn");
+    const customAmountInput = document.getElementById("customAmount");
+    const btnAmountText = document.getElementById("btnAmountText");
+    const paymentOptions = document.querySelectorAll(".payment-option");
+    const donationForm = document.getElementById("donationForm");
+    const thankYouModal = document.getElementById("thankYouModal");
+    const closeModalBtn = document.getElementById("closeModalBtn");
 
-                <a href="gallery.html" class="btn btn-gallery-nav">
-                    <i class="fa-solid fa-images" aria-hidden="true"></i> Photo Gallery
-                </a>
+    if (donationForm) {
+        // Sync amount buttons with custom input & button text
+        amountBtns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                amountBtns.forEach((b) => b.classList.remove("active"));
+                btn.classList.add("active");
 
-                <!-- Updated to match btn-gallery-nav class -->
-                <a href="donate.html" class="btn btn-gallery-nav">
-                    <i class="fa-solid fa-heart" aria-hidden="true"></i> Donate Now
-                </a>
-            </div>
-        </nav>
+                const val = btn.getAttribute("data-amount");
+                if (customAmountInput) customAmountInput.value = val;
+                if (btnAmountText) btnAmountText.textContent = val;
+            });
+        });
 
-        <!-- Hero Header -->
-        <header id="home" class="hero">
-            <div class="hero-content">
-                <span class="badge">Brought to you by CamEd Business School</span>
-                <h1>Bringing Smiles to Children Across Cambodia</h1>
-                <p>
-                    Empowering local education and creating brighter futures through community support and charitable
-                    action.
-                </p>
+        if (customAmountInput) {
+            customAmountInput.addEventListener("input", (e) => {
+                amountBtns.forEach((b) => b.classList.remove("active"));
+                const val = e.target.value || 0;
+                if (btnAmountText) btnAmountText.textContent = val;
+            });
+        }
 
-                <!-- Updated Hero Action Buttons -->
-                <div class="hero-btns">
-                    <a href="#schools" class="btn btn-primary">
-                        <i class="fa-solid fa-school" aria-hidden="true"></i> See Our Schools
-                    </a>
-                    <a href="donate.html" class="btn btn-primary">
-                        <i class="fa-solid fa-heart" aria-hidden="true"></i> Donate Now
-                    </a>
-                    <a href="gallery.html" class="btn btn-secondary">
-                        <i class="fa-solid fa-images" aria-hidden="true"></i> Photo Gallery
-                    </a>
-                    <a href="#contact" class="btn btn-secondary">
-                        <i class="fa-solid fa-envelope" aria-hidden="true"></i> Get In Touch
-                    </a>
-                </div>
-            </div>
-        </header>
-        <main>
-            <!-- About Section -->
-            <section id="about" class="section about-section">
-                <div class="container">
-                    <h2 class="section-title">More About Us</h2>
-                    <div class="about-grid">
-                        <article class="about-card">
-                            <i class="fa-solid fa-heart icon" aria-hidden="true"></i>
-                            <h3>Our Mission</h3>
-                            <p>
-                                Driven by the students of CamEd Business School, SharingSmilesCharity aims to support
-                                under-resourced schools and improve educational environments for young students in need.
-                            </p>
-                        </article>
-                        <article class="about-card">
-                            <i class="fa-solid fa-hand-holding-heart icon" aria-hidden="true"></i>
-                            <h3>Community Support</h3>
-                            <p>
-                                We connect passionate volunteers and donors with rural learning communities to provide
-                                essential academic tools, renovation support, and positive learning spaces.
-                            </p>
-                        </article>
-                    </div>
-                </div>
-            </section>
+        // Toggle Payment Option Active State
+        paymentOptions.forEach((option) => {
+            option.addEventListener("click", () => {
+                paymentOptions.forEach((o) => o.classList.remove("active"));
+                option.classList.add("active");
+                const radio = option.querySelector("input[type='radio']");
+                if (radio) radio.checked = true;
+            });
+        });
 
-            <!-- Schools Section -->
-            <section id="schools" class="section schools-section">
-                <div class="container">
-                    <h2 class="section-title">Schools The Charity Will Help</h2>
-                    <p class="section-subtitle">
-                        Discover the educational institutions we are currently partnering with to deliver supplies,
-                        infrastructure improvements, and direct student aid.
-                    </p>
+        // Handle Form Submit
+        donationForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            if (thankYouModal) {
+                thankYouModal.classList.add("active");
+            }
+        });
 
-                    <div class="schools-grid">
-                        <!-- School Card 1 -->
-                        <article class="school-card">
-                            <div class="school-map-wrapper">
-                                <iframe
-                                    title="Location Map for Prei Ta Hoo Primary School"
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d499047.20123968844!2d104.06662208906249!3d12.261386400000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x310e8df96e8569df%3A0xa2a467a6f35b947f!2z4Z6f4Z624Z6b4Z624Z6U4Z6L4Z6Y4Z6f4Z634Z6A4Z-S4Z6f4Z624Z6W4Z-S4Z6a4Z-C4Z6A4Z6P4Z-S4Z6a4Z6U4Z-L!5e0!3m2!1sen!2skh!4v1788158507342!5m2!1sen!2skh"
-                                    width="100%"
-                                    height="200"
-                                    style="border: 0"
-                                    allowfullscreen=""
-                                    loading="lazy"
-                                    referrerpolicy="strict-origin-when-cross-origin">
-                                </iframe>
-                            </div>
-                            <div class="school-card-body">
-                                <h3>សាលាបឋមសិក្សាព្រៃតាហ៊ូ</h3>
-                                <p>
-                                    Providing updated textbook collections, stationery packs, and classroom repairs to
-                                    enhance everyday learning environments.
-                                </p>
-                            </div>
-                        </article>
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener("click", () => {
+                thankYouModal.classList.remove("active");
+                donationForm.reset();
+                btnAmountText.textContent = "5";
+                amountBtns[0].click();
+            });
+        }
+    }
+    // --- Lightbox Modal Logic ---
+    const galleryImages = Array.from(document.querySelectorAll(".gallery-img"));
+    const lightboxModal = document.getElementById("lightboxModal");
+    const lightboxImg = document.getElementById("lightboxImg");
+    const lightboxClose = document.getElementById("lightboxClose");
+    const lightboxPrev = document.getElementById("lightboxPrev");
+    const lightboxNext = document.getElementById("lightboxNext");
 
-                        <!-- School Card 2 -->
-                        <article class="school-card">
-                            <div class="school-map-wrapper">
-                                <iframe
-                                    title="Location Map for Kang Meas Primary School"
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d88251.22346004735!2d104.71483181153035!3d12.167470341973994!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x310e913993fff9c3%3A0xaa217ccc39756f12!2z4Z6f4Z624Z6b4Z624Z6U4Z6L4Z6Y4Z6f4Z634Z6A4Z-S4Z6f4Z62IOGegOGehOGemOGetuGenw!5e0!3m2!1sen!2skh!4v1788158678382!5m2!1sen!2skh"
-                                    width="100%"
-                                    height="200"
-                                    style="border: 0"
-                                    allowfullscreen=""
-                                    loading="lazy"
-                                    referrerpolicy="strict-origin-when-cross-origin">
-                                </iframe>
-                            </div>
-                            <div class="school-card-body">
-                                <h3>សាលាបឋមសិក្សាកងមាស</h3>
-                                <p>
-                                    Distributing desk furniture, basic technology supplies, and hygiene access kits for
-                                    young pupils.
-                                </p>
-                            </div>
-                        </article>
-                    </div>
-                </div>
-            </section>
+    let currentIndex = 0;
 
-            <!-- Contact Section -->
-            <section id="contact" class="section contact-section">
-                <div class="container">
-                    <h2 class="section-title">Contact Us</h2>
-                    <p class="section-subtitle">
-                        Reach out to us directly or follow our official social channels to stay updated on our latest
-                        donation drives and activities.
-                    </p>
+    if (lightboxModal && lightboxImg && galleryImages.length > 0) {
+        // Function to show image at specific index
+        const showImage = (index) => {
+            if (index < 0) {
+                currentIndex = galleryImages.length - 1;
+            } else if (index >= galleryImages.length) {
+                currentIndex = 0;
+            } else {
+                currentIndex = index;
+            }
+            const targetImg = galleryImages[currentIndex];
+            lightboxImg.src = targetImg.src;
+            lightboxImg.alt = targetImg.alt || "Enlarged photo";
+        };
 
-                    <div class="contact-grid">
-                        <div class="contact-info">
-                            <h3>Get In Touch</h3>
-                            <div class="info-item">
-                                <i class="fa-solid fa-phone" aria-hidden="true"></i>
-                                <a href="tel:+85561484817" class="contact-link">(+855) 61 484817</a>
-                            </div>
-                            <div class="info-item">
-                                <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
-                                <span>Brought to you by CamEd Business School</span>
-                            </div>
+        // Open lightbox when clicking any gallery image
+        galleryImages.forEach((img, idx) => {
+            img.addEventListener("click", (e) => {
+                e.stopPropagation();
+                showImage(idx);
+                lightboxModal.classList.add("active");
+                document.body.style.overflow = "hidden"; // Prevent background scrolling
+            });
+        });
 
-                            <h3>Follow Us</h3>
-                            <div class="social-links">
-                                <a
-                                    href="https://www.facebook.com/sharingsmilesforchildren"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="social-btn">
-                                    <i class="fa-brands fa-facebook-f" aria-hidden="true"></i> ចែករំលែកស្នាមញញឹម-Sharing
-                                    Smiles
-                                </a>
-                                <a
-                                    href="https://www.instagram.com/sharingsmilesforchildren"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="social-btn">
-                                    <i class="fa-brands fa-instagram" aria-hidden="true"></i> @sharingsmilesforchildren
-                                </a>
-                                <a
-                                    href="https://www.tiktok.com/@sharingsmilesforchildren"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="social-btn">
-                                    <i class="fa-brands fa-tiktok" aria-hidden="true"></i> @sharingsmilesforchildren
-                                </a>
-                            </div>
-                        </div>
+        // Close Lightbox
+        const closeLightbox = () => {
+            lightboxModal.classList.remove("active");
+            document.body.style.overflow = ""; // Restore scrolling
+        };
 
-                        <form class="contact-form" id="charityContactForm">
-                            <h3>Send Us a Message</h3>
-                            <div class="form-group">
-                                <label for="name" class="sr-only">Your Name</label>
-                                <input type="text" id="name" name="name" placeholder="Your Name" required />
-                            </div>
-                            <div class="form-group">
-                                <label for="email" class="sr-only">Your Email Address</label>
-                                <input type="email" id="email" name="email" placeholder="Your Email Address" required />
-                            </div>
-                            <div class="form-group">
-                                <label for="message" class="sr-only"
-                                    >How would you like to support or get involved?</label
-                                >
-                                <textarea
-                                    id="message"
-                                    name="message"
-                                    rows="5"
-                                    placeholder="How would you like to support or get involved?"
-                                    required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-full">Send Message</button>
-                        </form>
-                    </div>
-                </div>
-            </section>
-        </main>
+        // Close button click
+        if (lightboxClose) {
+            lightboxClose.addEventListener("click", (e) => {
+                e.stopPropagation();
+                closeLightbox();
+            });
+        }
 
-        <!-- Footer -->
-        <footer class="footer">
-            <p>&copy; 2026 SharingSmilesCharity. Brought to you by CamEd Business School. All rights reserved.</p>
-        </footer>
+        // Prev button click
+        if (lightboxPrev) {
+            lightboxPrev.addEventListener("click", (e) => {
+                e.stopPropagation();
+                showImage(currentIndex - 1);
+            });
+        }
 
-        <script src="script.js"></script>
-    </body>
-</html>
+        // Next button click
+        if (lightboxNext) {
+            lightboxNext.addEventListener("click", (e) => {
+                e.stopPropagation();
+                showImage(currentIndex + 1);
+            });
+        }
+
+        // Close when clicking directly on dark backdrop (outside controls/image)
+        lightboxModal.addEventListener("click", (e) => {
+            if (e.target === lightboxModal) {
+                closeLightbox();
+            }
+        });
+
+        // Keyboard Controls (Left, Right, Escape)
+        document.addEventListener("keydown", (e) => {
+            if (!lightboxModal.classList.contains("active")) return;
+
+            if (e.key === "Escape") closeLightbox();
+            if (e.key === "ArrowLeft") showImage(currentIndex - 1);
+            if (e.key === "ArrowRight") showImage(currentIndex + 1);
+        });
+    }
+});

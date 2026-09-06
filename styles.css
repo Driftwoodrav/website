@@ -281,7 +281,15 @@ body {
         text-align: center;
     }
 
-    /* Specific Override for Gallery Page Header Controls */
+    .gallery-body .nav-right-container .btn {
+        padding: 0.4rem 0.85rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Make gallery header controls remain inline on desktop only.
+   On small screens the unified mobile menu (hamburger) will be used. */
+@media screen and (min-width: 993px) {
     .gallery-body .nav-right-container {
         position: static;
         max-height: none;
@@ -295,7 +303,7 @@ body {
 
     .gallery-body .nav-right-container .btn {
         padding: 0.4rem 0.85rem;
-        font-size: 0.85rem;
+        font-size: 0.95rem;
     }
 }
 
@@ -1148,7 +1156,9 @@ body {
     color: #ffffff !important;
     font-weight: 700;
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-    transition: transform 0.2s ease, background-color 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease;
 }
 
 .btn-donate-nav:hover {
@@ -1179,7 +1189,9 @@ body {
     text-decoration: none;
     box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
     z-index: 999;
-    transition: transform 0.2s ease, background-color 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease;
 }
 
 .floating-donate-btn:hover {
@@ -1203,32 +1215,149 @@ body {
 }
 
 .btn-donate-nav {
-  background-color: #e63946; /* Accent red/pink */
-  color: #ffffff;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: 600;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: background-color 0.2s ease;
+    background-color: #e63946; /* Accent red/pink */
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s ease;
 }
 
 .btn-donate-nav:hover {
-  background-color: #d62828;
+    background-color: #d62828;
 }
 
 .hero-btns {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem;
-  max-width: 500px;
-  margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 .hero-btns .btn {
-  flex: 1 1 20px; /* Expands evenly on mobile while keeping a min-width */
-  justify-content: center;
+    flex: 1 1 20px; /* Expands evenly on mobile while keeping a min-width */
+    justify-content: center;
+}
+
+/* --- Order & Staff Page styles (append) --- */
+.order-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 28px;
+    align-items: start;
+}
+
+@media (max-width: 980px) {
+    .order-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.menu-card {
+    background: #ffffff;
+    border: 1px solid #eef2f7;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.menu-card .muted {
+    color: #64748b;
+    font-size: 0.92rem;
+    margin-top: 4px;
+}
+.menu-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.price {
+    font-weight: 700;
+    color: #0f172a;
+}
+.qty-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.qty-group .item-qty {
+    width: 64px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.cart-panel {
+    margin-top: 12px;
+    background: #fafafa;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+}
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    padding: 8px 6px;
+    border-bottom: 1px dashed #eef2f7;
+}
+.cart-item:last-child {
+    border-bottom: none;
+}
+.remove-btn {
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.staff-section .donate-card {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.order-table th,
+.order-table td {
+    padding: 8px;
+    border-bottom: 1px solid #eef2f7;
+    text-align: left;
+    font-size: 0.95rem;
+    vertical-align: top;
+}
+.order-status.pending {
+    color: #f59e0b;
+    font-weight: 700;
+}
+.order-status.fulfilled {
+    color: #10b981;
+    font-weight: 700;
+}
+
+/* small tweaks so nav doesn't crowd buttons on tiny screens */
+@media screen and (max-width: 420px) {
+    .nav-right-container {
+        gap: 0.4rem;
+    }
+    .nav-right-container .btn {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.86rem;
+    }
+    .menu-toggle {
+        z-index: 1002;
+    }
 }

@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Order Drinks - SharingSmilesCharity</title>
+        <link rel="stylesheet" href="styles.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <style>
+            /* Page-specific tweaks for product images and responsive menu cards */
+            .menu-card {
+                padding: 12px;
+                gap: 12px;
+                align-items: center;
+                display: flex;
+                background: #fff;
+                border-radius: 12px;
+                border: 1px solid #eef2f7;
+            }
+
+            .menu-thumb {
+                width: 84px;
+                height: 84px;
+                border-radius: 10px;
+                object-fit: cover;
+                flex: 0 0 84px;
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+            }
+
+            .menu-card .menu-info {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+
+            .menu-card .menu-actions {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-end;
+                flex: 0 0 auto;
+            }
+
+            .menu-card .price {
+                font-weight: 800;
+                color: #0f172a;
+                background: #fff;
+                padding: 6px 10px;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            }
+
+            .menu-card strong {
+                display: block;
+                font-size: 1rem;
+                margin-bottom: 6px;
+                color: #0f172a;
+            }
+            .muted {
+                color: #6b7280;
+                font-size: 0.92rem;
+            }
+
+            @media (max-width: 980px) {
+                .menu-thumb {
+                    width: 64px;
+                    height: 64px;
+                    flex: 0 0 64px;
+                }
+                .qty-group .item-qty {
+                    width: 56px;
+                }
+                .menu-card {
+                    gap: 10px;
+                    padding: 10px;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Unified Navigation Bar -->
+        <nav class="navbar" aria-label="Main Navigation">
+            <div class="logo-container">
+                <img src="images/charity-logo.png" alt="SharingSmiles Charity Logo" class="brand-logo" />
+                <div class="logo-divider" role="separator"></div>
+                <img src="images/camed-logo.png" alt="CamEd Business School Logo" class="brand-logo" />
+            </div>
+
+            <button
+                class="menu-toggle"
+                id="mobileMenuBtn"
+                aria-label="Toggle Navigation Menu"
+                aria-expanded="false"
+                aria-controls="navLinks">
+                <i class="fa-solid fa-bars" aria-hidden="true"></i>
+            </button>
+
+            <div class="nav-right-container">
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html#home" class="nav-item">Home</a></li>
+                    <li><a href="index.html#about" class="nav-item">More About Us</a></li>
+                    <li><a href="index.html#schools" class="nav-item">Schools We Help</a></li>
+                    <li><a href="index.html#contact" class="nav-item">Contact Us</a></li>
+                    <li><a href="gallery.html" class="nav-item">Photo Gallery</a></li>
+                    <li><a href="donate.html" class="nav-item">Donate</a></li>
+                    <li><a href="order.html" class="nav-item">Order</a></li>
+                    <li><a href="staff.html" class="nav-item">Staff</a></li>
+                </ul>
+
+                <!-- Secondary CTA Buttons -->
+                <a href="gallery.html" class="btn btn-gallery-nav">
+                    <i class="fa-solid fa-images" aria-hidden="true"></i> Photo Gallery
+                </a>
+                <a href="donate.html" class="btn btn-gallery-nav">
+                    <i class="fa-solid fa-heart" aria-hidden="true"></i> Donate Now
+                </a>
+                <a href="order.html" class="btn btn-gallery-nav">
+                    <i class="fa-solid fa-box" aria-hidden="true"></i> Order
+                </a>
+            </div>
+        </nav>
+
+        <main>
+            <header class="order-hero">
+                <div class="container">
+                    <h2 class="section-title">Tea Series</h2>
+                    <p class="section-subtitle">
+                        Oolong milk tea, Black Assam fruit tea, Earl Grey jelly tea — USD 2.50 each.
+                    </p>
+                </div>
+            </header>
+
+            <section class="section">
+                <div class="container">
+                    <div class="order-grid">
+                        <!-- Menu Column -->
+                        <div class="menu-column">
+                            <h3 class="card-title">Tea Menu</h3>
+
+                            <div class="menu-list" id="menuList">
+                                <!-- Oolong milk tea -->
+                                <div
+                                    class="menu-card"
+                                    data-id="oolong"
+                                    data-name="Oolong Milk Tea"
+                                    data-price="2.50"
+                                    data-image="images/product-oolong.jpg">
+                                    <img class="menu-thumb" src="images/product-oolong.jpg" alt="Oolong Milk Tea" />
+                                    <div class="menu-info">
+                                        <strong>Oolong Milk Tea</strong>
+                                        <div class="muted">Creamy oolong with milk</div>
+                                    </div>
+                                    <div class="menu-actions">
+                                        <div class="price">USD 2.50</div>
+                                        <div class="qty-group" style="display: flex; gap: 8px; align-items: center">
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                value="1"
+                                                class="item-qty"
+                                                aria-label="Quantity for Oolong Milk Tea" />
+                                            <button class="btn add-item-btn">Add</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Black Assam fruit tea -->
+                                <div
+                                    class="menu-card"
+                                    data-id="assam"
+                                    data-name="Black Assam Fruit Tea"
+                                    data-price="2.50"
+                                    data-image="images/product-assam.jpg">
+                                    <img
+                                        class="menu-thumb"
+                                        src="images/product-assam.jpg"
+                                        alt="Black Assam Fruit Tea" />
+                                    <div class="menu-info">
+                                        <strong>Black Assam Fruit Tea</strong>
+                                        <div class="muted">Fruity black tea infusion</div>
+                                    </div>
+                                    <div class="menu-actions">
+                                        <div class="price">USD 2.50</div>
+                                        <div class="qty-group" style="display: flex; gap: 8px; align-items: center">
+                                            <input type="number" min="1" value="1" class="item-qty" />
+                                            <button class="btn add-item-btn">Add</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Earl Grey jelly tea -->
+                                <div
+                                    class="menu-card"
+                                    data-id="earlgrey"
+                                    data-name="Earl Grey Jelly Tea"
+                                    data-price="2.50"
+                                    data-image="images/product-earlgrey.jpg">
+                                    <img
+                                        class="menu-thumb"
+                                        src="images/product-earlgrey.jpg"
+                                        alt="Earl Grey Jelly Tea" />
+                                    <div class="menu-info">
+                                        <strong>Earl Grey Jelly Tea</strong>
+                                        <div class="muted">Earl Grey with jelly topping</div>
+                                    </div>
+                                    <div class="menu-actions">
+                                        <div class="price">USD 2.50</div>
+                                        <div class="qty-group" style="display: flex; gap: 8px; align-items: center">
+                                            <input type="number" min="1" value="1" class="item-qty" />
+                                            <button class="btn add-item-btn">Add</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cart / Order Column -->
+                        <aside class="cart-column">
+                            <h3 class="card-title">Your Order</h3>
+
+                            <form id="orderForm" class="donate-card" autocomplete="off" aria-live="polite">
+                                <div class="form-group">
+                                    <label for="fullName">Full Name</label>
+                                    <input id="fullName" name="fullName" class="form-input" required />
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="building">Building</label>
+                                    <select id="building" required class="form-input">
+                                        <option value="">Select building</option>
+                                        <option value="East">CamEd East Building</option>
+                                        <option value="Central">CamEd Central Building</option>
+                                        <option value="West">CamEd West Building</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="room">Room / Unit</label>
+                                    <select id="room" name="room" class="form-input" required>
+                                        <option value="">Select building first</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="phone">Phone (Telegram)</label>
+                                    <input id="phone" name="phone" class="form-input" placeholder="+855" />
+                                </div>
+
+                                <div class="cart-panel" id="cartPanel">
+                                    <div id="cartItems">
+                                        <p class="muted">No items yet. Use the menu to add items.</p>
+                                    </div>
+
+                                    <div class="cart-summary">
+                                        <div><strong>Subtotal:</strong> <span id="subtotal">USD 0.00</span></div>
+                                        <div><strong>Delivery:</strong> <span id="delivery">USD 0.00</span></div>
+                                        <div style="margin-top: 8px">
+                                            <strong>Total:</strong> <span id="total">USD 0.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn-donate-submit">Place Order</button>
+
+                                <div style="margin-top: 12px; display: flex; gap: 8px">
+                                    <button type="button" class="btn btn-secondary-outline" id="clearCartBtn">
+                                        Clear Cart
+                                    </button>
+                                </div>
+                            </form>
+                        </aside>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Success modal -->
+        <div class="donate-modal" id="orderSuccessModal" aria-hidden="true">
+            <div class="donate-modal-content">
+                <div class="success-icon"><i class="fa-solid fa-check-circle"></i></div>
+                <h3>Thank you!</h3>
+                <p id="successMessage">Your order has been placed.</p>
+                <div style="margin-top: 12px; text-align: right">
+                    <button id="closeSuccess" class="btn btn-primary">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>&copy; 2026 SharingSmilesCharity. Brought to you by CamEd Business School. All rights reserved.</p>
+        </footer>
+
+        <!-- Room population script (unchanged) -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const roomsByBuilding = {
+                    East: [
+                        "Study Lounge",
+                        "IT & Registrar",
+                        "Finance",
+                        "Myron Scholes",
+                        "Fibonacci Computer Laboratory",
+                        "Daniel Kahneman",
+                        "Reading Room",
+                        "Robert Shiller",
+                        "Franco Modigliani",
+                        "Robert Solow",
+                        "David Alonso",
+                        "Meeting Room",
+                        "H.E. Dr. Ngy Tayi"
+                    ],
+                    Central: [
+                        "Study Lounge",
+                        "Health Clinic",
+                        "IQA & IA, HR",
+                        "Learning Support Center",
+                        "Luca Pacioli",
+                        "Milton Friedman",
+                        "Dr. Sam Ghanty",
+                        "Library",
+                        "Business Lab 3",
+                        "Studio Room",
+                        "Consultation Room",
+                        "Media & Graphic Design Office",
+                        "Diversity Laboratory Room"
+                    ],
+                    West: [
+                        "Study Lounge",
+                        "Admission",
+                        "Front Desk",
+                        "Harry Markowitz",
+                        "Lecturer Room",
+                        "Lecturer Room & International Engagement",
+                        "Adam Smith",
+                        "Peter Bainbridge",
+                        "Richard Thaler",
+                        "William F. Sharpe",
+                        "John Maynard Keynes",
+                        "Sir David Tweedie",
+                        "Thomas Hobbes Reading Room",
+                        "John Locke Reading Room",
+                        "Warren Buffett",
+                        "Benjamin Graham Discussion Room",
+                        "Nassim Nicolas Taleb",
+                        "Lab 5",
+                        "Lab 6",
+                        "Lab 7",
+                        "Lab 8",
+                        "Lab 9",
+                        "Lab 10",
+                        "Lab 11",
+                        "Lab 12"
+                    ]
+                };
+
+                const buildingEl = document.getElementById("building");
+                const roomEl = document.getElementById("room");
+
+                function populateRooms(building) {
+                    roomEl.innerHTML = "";
+                    if (!building || !roomsByBuilding[building]) {
+                        const opt = document.createElement("option");
+                        opt.value = "";
+                        opt.textContent = "Select building first";
+                        roomEl.appendChild(opt);
+                        roomEl.disabled = true;
+                        return;
+                    }
+                    const placeholder = document.createElement("option");
+                    placeholder.value = "";
+                    placeholder.textContent = "Select room / unit";
+                    roomEl.appendChild(placeholder);
+
+                    roomsByBuilding[building].forEach((r) => {
+                        const opt = document.createElement("option");
+                        opt.value = r;
+                        opt.textContent = r;
+                        roomEl.appendChild(opt);
+                    });
+                    roomEl.disabled = false;
+                }
+
+                // initial state
+                populateRooms(null);
+
+                buildingEl.addEventListener("change", function () {
+                    populateRooms(this.value);
+                });
+            });
+        </script>
+
+        <!-- Firebase and app script -->
+        <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+        <script src="firebase-config.js"></script>
+        <script src="script.js"></script>
+    </body>
+</html>

@@ -7,20 +7,57 @@
         <link rel="stylesheet" href="styles.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
         <style>
-            /* Page-specific staff styles */
+            /* Staff Page Specific Styles */
+            .staff-section .donate-card {
+                max-width: 100%;
+                margin: 0 auto;
+                padding: 0;
+            }
+
+            .staff-headers {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 20px;
+                flex-wrap: wrap;
+            }
+
+            .staff-headers > div:first-child h2 {
+                margin: 0 0 8px 0;
+            }
+
+            .staff-headers > div:last-child {
+                display: flex;
+                gap: 8px;
+            }
+
+            .small-muted {
+                font-size: 0.9rem;
+                color: #64748b;
+            }
+
+            /* Search & Sort Controls */
             .staff-controls {
                 display: flex;
                 gap: 12px;
                 align-items: center;
-                margin-bottom: 14px;
+                margin-bottom: 16px;
                 flex-wrap: wrap;
+                background: #ffffff;
+                padding: 12px;
+                border-radius: 12px;
+                border: 1px solid #e5e7eb;
             }
+
             .staff-controls .search {
-                flex: 1 1 220px;
+                flex: 1 1 250px;
                 display: flex;
                 gap: 8px;
                 align-items: center;
+                min-width: 200px;
             }
+
             .staff-controls input[type="search"] {
                 width: 100%;
                 padding: 10px 12px;
@@ -29,6 +66,11 @@
                 outline: none;
                 font-size: 0.95rem;
             }
+
+            .staff-controls input[type="search"]:focus {
+                border-color: #ff69b4;
+            }
+
             .staff-controls select,
             .staff-controls .btn {
                 padding: 10px 12px;
@@ -36,116 +78,335 @@
                 border: 1px solid #e5e7eb;
                 background: #fff;
                 font-size: 0.95rem;
-            }
-            .controls-row {
-                display: flex;
-                justify-content: space-between;
-                gap: 12px;
-                align-items: center;
-                margin-bottom: 12px;
-                flex-wrap: wrap;
+                cursor: pointer;
             }
 
-            /* Table tweaks */
+            .controls-label {
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: #374151;
+                white-space: nowrap;
+            }
+
+            /* Orders Table/List Container */
+            #ordersList {
+                margin-top: 12px;
+                overflow-x: auto;
+                border-radius: 10px;
+                background: #ffffff;
+            }
+
+            /* Table Styles for Desktop */
             .order-table {
                 width: 100%;
                 border-collapse: collapse;
                 background: #fff;
                 border-radius: 8px;
                 overflow: hidden;
-                box-shadow: 0 10px 30px rgba(2, 6, 23, 0.06);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             }
+
             .order-table thead {
-                background: linear-gradient(90deg, #fff, #fff);
+                background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%);
+                border-bottom: 2px solid #e2e8f0;
             }
-            .order-table th,
+
+            .order-table th {
+                padding: 12px 14px;
+                text-align: left;
+                font-weight: 700;
+                font-size: 0.9rem;
+                color: #334155;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
             .order-table td {
-                padding: 10px 12px;
-                border-bottom: 1px solid #eef2f7;
+                padding: 14px;
+                border-bottom: 1px solid #e5e7eb;
                 text-align: left;
                 font-size: 0.95rem;
                 vertical-align: top;
+                color: #1e293b;
             }
 
-            /* Mobile: make each row card-like */
-            @media (max-width: 880px) {
-                .order-table thead {
-                    display: none;
-                }
-                .order-table,
-                .order-table tbody,
-                .order-table tr,
-                .order-table td {
-                    display: block;
-                    width: 100%;
-                }
-                .order-table tr {
-                    margin-bottom: 12px;
-                    border-radius: 10px;
-                    background: #ffffff;
-                    box-shadow: 0 6px 18px rgba(2, 6, 23, 0.04);
-                    padding: 12px;
-                }
-                .order-table td {
-                    padding: 8px 10px;
-                    border: none;
-                }
-                .order-table td[data-label]::before {
-                    content: attr(data-label) ": ";
-                    font-weight: 700;
-                    display: inline-block;
-                    width: 120px;
-                    color: #334155;
-                }
-                .order-actions {
-                    display: flex;
-                    gap: 8px;
-                    margin-top: 8px;
-                }
-                .order-actions .btn {
-                    padding: 8px 10px;
-                    font-size: 0.9rem;
-                }
+            .order-table tbody tr:hover {
+                background-color: #f8fafc;
             }
 
-            /* small visual fixes */
-            .muted {
-                color: #64748b;
+            .order-table tbody tr:last-child td {
+                border-bottom: none;
             }
-            .status-badge {
-                padding: 6px 8px;
-                border-radius: 8px;
+
+            /* Status Badges */
+            .order-status {
+                display: inline-block;
+                padding: 6px 12px;
+                border-radius: 6px;
                 font-weight: 700;
+                font-size: 0.85rem;
                 text-transform: capitalize;
             }
-            .status-badge.pending {
-                background: #fff7ed;
-                color: #b45309;
-                border: 1px solid #ffedd5;
-            }
-            .status-badge.fulfilled {
-                background: #ecfdf5;
-                color: #047857;
-                border: 1px solid #bbf7d0;
+
+            .order-status.pending {
+                background: #fef3c7;
+                color: #92400e;
+                border: 1px solid #fcd34d;
             }
 
-            .staff-headers {
+            .order-status.fulfilled {
+                background: #dcfce7;
+                color: #166534;
+                border: 1px solid #86efac;
+            }
+
+            /* Order ID */
+            .order-id {
+                font-weight: 700;
+                color: #ff69b4;
+                font-family: monospace;
+                font-size: 0.85rem;
+            }
+
+            /* Customer Info - Separated */
+            .customer-info {
                 display: flex;
-                justify-content: space-between;
-                align-items: center;
-                gap: 12px;
-                margin-bottom: 12px;
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .customer-name {
+                font-weight: 700;
+                color: #0f172a;
+                font-size: 0.95rem;
+            }
+
+            .customer-location {
+                font-size: 0.85rem;
+                color: #64748b;
+                font-weight: 500;
+            }
+
+            .customer-phone {
+                font-size: 0.8rem;
+                color: #94a3b8;
+            }
+
+            /* Items Display - Better Spacing */
+            .items-list {
+                font-size: 0.9rem;
+                line-height: 1.8;
+                color: #475569;
+                margin-top: 8px;
+            }
+
+            .items-list strong {
+                color: #0f172a;
+                display: block;
+            }
+
+            .items-list div {
+                margin-bottom: 4px;
+            }
+
+            /* Actions Buttons */
+            .order-actions {
+                display: flex;
+                gap: 6px;
                 flex-wrap: wrap;
             }
 
-            .small-muted {
-                font-size: 0.9rem;
+            .order-actions .btn {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+                white-space: nowrap;
+            }
+
+            /* Tablet & Mobile: Card Layout */
+            @media (max-width: 1024px) {
+                .staff-controls {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .staff-controls .search {
+                    flex: 1 1 100%;
+                    min-width: auto;
+                }
+
+                .staff-controls select,
+                .staff-controls .btn {
+                    flex: 1 1 auto;
+                }
+
+                /* Hide table, show cards */
+                .order-table thead {
+                    display: none;
+                }
+
+                .order-table,
+                .order-table tbody,
+                .order-table tr {
+                    display: block;
+                    width: 100%;
+                }
+
+                .order-table {
+                    border-collapse: initial;
+                }
+
+                .order-table tr {
+                    margin-bottom: 16px;
+                    border-radius: 12px;
+                    background: #ffffff;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+                    overflow: hidden;
+                    border: 1px solid #e5e7eb;
+                }
+
+                .order-table td {
+                    display: block;
+                    padding: 12px;
+                    border: none;
+                    border-bottom: 1px solid #f1f5f9;
+                    width: 100%;
+                }
+
+                .order-table td:last-child {
+                    border-bottom: none;
+                }
+
+                .order-table td::before {
+                    content: attr(data-label);
+                    font-weight: 700;
+                    color: #475569;
+                    display: block;
+                    font-size: 0.8rem;
+                    text-transform: uppercase;
+                    margin-bottom: 8px;
+                    letter-spacing: 0.5px;
+                }
+
+                .order-table tr::before {
+                    content: "Order ID: " attr(data-order-id);
+                    display: block;
+                    padding: 12px 12px 6px 12px;
+                    font-weight: 700;
+                    font-size: 1rem;
+                    color: #ff69b4;
+                    font-family: monospace;
+                }
+
+                .order-table td:first-child {
+                    display: none;
+                }
+
+                .items-list {
+                    margin-top: 8px;
+                }
+
+                .order-actions {
+                    flex-direction: column;
+                    gap: 8px;
+                    margin-top: 8px;
+                }
+
+                .order-actions .btn {
+                    padding: 10px;
+                    font-size: 0.9rem;
+                    width: 100%;
+                    text-align: center;
+                }
+            }
+
+            @media (max-width: 600px) {
+                .staff-headers {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .staff-headers > div:first-child h2 {
+                    font-size: 1.5rem;
+                }
+
+                .staff-headers > div:last-child {
+                    gap: 6px;
+                    flex: 1 1 100%;
+                }
+
+                .staff-headers .btn {
+                    flex: 1;
+                }
+
+                .staff-controls {
+                    padding: 10px;
+                    flex-direction: column;
+                }
+
+                .staff-controls input[type="search"],
+                .staff-controls select,
+                .staff-controls .btn {
+                    font-size: 1rem;
+                    padding: 12px 10px;
+                }
+
+                .controls-label {
+                    display: none;
+                }
+
+                #ordersList {
+                    max-height: 70vh;
+                }
+
+                .order-table tr {
+                    margin-bottom: 12px;
+                }
+
+                .order-table td {
+                    padding: 10px;
+                    font-size: 0.9rem;
+                }
+
+                .customer-name {
+                    font-size: 0.9rem;
+                }
+
+                .items-list {
+                    font-size: 0.85rem;
+                }
+
+                .order-actions {
+                    gap: 6px;
+                }
+
+                .order-actions .btn {
+                    padding: 8px 10px;
+                    font-size: 0.8rem;
+                }
+            }
+
+            /* Login Card */
+            #staffLogin {
+                max-width: 420px;
+                margin: 0 auto;
+            }
+
+            #staffPin {
+                font-size: 1.1rem;
+                letter-spacing: 2px;
+            }
+
+            /* Empty state */
+            .muted {
                 color: #64748b;
+                text-align: center;
+                padding: 40px 20px;
+                font-size: 0.95rem;
             }
         </style>
     </head>
     <body>
-        <!-- Unified Navigation Bar -->
+        <!-- Navigation Bar -->
         <nav class="navbar" aria-label="Main Navigation">
             <div class="logo-container">
                 <img src="images/charity-logo.png" alt="SharingSmiles Charity Logo" class="brand-logo" />
@@ -198,49 +459,57 @@
                         </div>
 
                         <div style="display: flex; gap: 8px; align-items: center">
-                            <button id="refreshOrders" class="btn btn-secondary-outline">Refresh</button>
-                            <button id="logoutBtn" class="btn btn-secondary-outline">Logout</button>
+                            <button id="refreshOrders" class="btn btn-secondary-outline">
+                                <i class="fa-solid fa-rotate-right"></i> Refresh
+                            </button>
+                            <button id="logoutBtn" class="btn btn-secondary-outline">
+                                <i class="fa-solid fa-sign-out-alt"></i> Logout
+                            </button>
                         </div>
                     </div>
 
                     <div id="staffArea">
-                        <div id="staffLogin" class="donate-card" style="max-width: 420px; margin: 0 auto">
+                        <div id="staffLogin" class="donate-card" style="margin: 0 auto">
                             <div class="form-group">
                                 <label for="staffPin">Staff PIN</label>
                                 <input id="staffPin" class="form-input" type="password" placeholder="Enter staff PIN" />
                             </div>
                             <div style="display: flex; gap: 8px; justify-content: flex-end">
-                                <button id="staffLoginBtn" class="btn btn-primary">Unlock</button>
+                                <button id="staffLoginBtn" class="btn btn-primary">
+                                    <i class="fa-solid fa-unlock"></i> Unlock
+                                </button>
                             </div>
                         </div>
 
                         <div id="ordersPanel" class="donate-card" style="display: none; margin-top: 20px">
+                            <!-- Search & Sort Controls -->
                             <div class="staff-controls" style="margin-bottom: 10px">
                                 <div class="search">
                                     <input
                                         id="searchOrders"
                                         type="search"
-                                        placeholder="Search orders by name, building, room or items..."
+                                        placeholder="Search by name, building, room, items..."
                                         aria-label="Search orders" />
-                                    <button id="clearSearch" class="btn btn-secondary-outline" title="Clear">
+                                    <button id="clearSearch" class="btn btn-secondary-outline" title="Clear search">
                                         <i class="fa-solid fa-xmark"></i>
                                     </button>
                                 </div>
 
                                 <div style="display: flex; gap: 8px; align-items: center">
-                                    <label for="sortOrders" class="small-muted" style="margin-right: 6px">Sort</label>
+                                    <label for="sortOrders" class="controls-label">Sort:</label>
                                     <select id="sortOrders" class="form-input" aria-label="Sort orders">
                                         <option value="newest" selected>Newest</option>
                                         <option value="oldest">Oldest</option>
-                                        <option value="total-desc">Total (high → low)</option>
-                                        <option value="total-asc">Total (low → high)</option>
-                                        <option value="status-pending">Status: Pending first</option>
-                                        <option value="status-fulfilled">Status: Fulfilled first</option>
+                                        <option value="total-desc">Highest Total</option>
+                                        <option value="total-asc">Lowest Total</option>
+                                        <option value="status-pending">Pending First</option>
+                                        <option value="status-fulfilled">Fulfilled First</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <div id="ordersList" style="margin-top: 12px; overflow: auto; max-height: 60vh">
+                            <!-- Orders Table -->
+                            <div id="ordersList" style="margin-top: 12px; max-height: 60vh; overflow-y: auto">
                                 <p class="muted">No orders yet.</p>
                             </div>
                         </div>
@@ -253,17 +522,13 @@
             <p>&copy; 2026 SharingSmilesCharity. Brought to you by CamEd Business School. All rights reserved.</p>
         </footer>
 
-        <!-- Firebase Compatibility SDKs -->
+        <!-- Firebase -->
         <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-
-        <!-- Configuration File -->
         <script src="firebase-config.js"></script>
-
-        <!-- Main script containing staff logic -->
         <script src="script.js"></script>
 
-        <!-- Page-specific search and sort logic -->
+        <!-- Search and sort logic -->
         <script>
             (function () {
                 let isSorting = false;
@@ -321,7 +586,7 @@
                     const tbody = getTableBody();
                     if (!tbody) return;
 
-                    isSorting = true; // Prevent MutationObserver infinite loop
+                    isSorting = true;
 
                     const rowsArr = rowsToArray(tbody);
                     const search = (document.getElementById("searchOrders").value || "").trim().toLowerCase();
@@ -353,14 +618,10 @@
                                 return a.total - b.total;
                             case "status-pending":
                                 if (a.status === b.status) return b.time - a.time;
-                                if (a.status === "pending") return -1;
-                                if (b.status === "pending") return 1;
-                                return 0;
+                                return a.status === "pending" ? -1 : 1;
                             case "status-fulfilled":
                                 if (a.status === b.status) return b.time - a.time;
-                                if (a.status === "fulfilled") return -1;
-                                if (b.status === "fulfilled") return 1;
-                                return 0;
+                                return a.status === "fulfilled" ? -1 : 1;
                             default:
                                 return b.time - a.time;
                         }
@@ -372,7 +633,7 @@
                         const statusCell = obj.row.querySelectorAll("td")[5];
                         if (statusCell) {
                             const text = statusCell.textContent.trim().toLowerCase();
-                            statusCell.innerHTML = `<span class="status-badge ${text === "fulfilled" ? "fulfilled" : "pending"}">${text}</span>`;
+                            statusCell.innerHTML = `<span class="order-status ${text === "fulfilled" ? "fulfilled" : "pending"}">${text}</span>`;
                         }
                     });
 
@@ -397,19 +658,20 @@
                     const apply = safeDebounced(sortAndFilter, 120);
 
                     if (searchEl) searchEl.addEventListener("input", apply);
-                    if (clearSearch)
+                    if (clearSearch) {
                         clearSearch.addEventListener("click", () => {
                             searchEl.value = "";
                             apply();
                             searchEl.focus();
                         });
+                    }
                     if (sortEl) sortEl.addEventListener("change", apply);
 
                     const ordersList = document.getElementById("ordersList");
                     if (!ordersList) return;
 
                     const mo = new MutationObserver(() => {
-                        if (isSorting) return; // Skip if mutation was triggered by sortAndFilter itself
+                        if (isSorting) return;
                         sortAndFilter();
                     });
 

@@ -190,7 +190,7 @@ function __init() {
 
         function calculateTotals() {
             const subtotal = cart.reduce((s, it) => s + it.price * it.qty, 0);
-            const delivery = 0; // delivery forced to zero
+            const delivery = 0;
             const total = subtotal + delivery;
             if (subtotalEl) subtotalEl.textContent = formatUSD(subtotal);
             if (deliveryEl) deliveryEl.textContent = formatUSD(delivery);
@@ -210,7 +210,7 @@ function __init() {
                     div.innerHTML = `
             <div>
               <div><strong>${it.name}</strong></div>
-              <div class="muted">USD ${it.price.toFixed(2)} × ${it.qty}</div>
+              <div class="muted">Sugar: ${it.sugar}% | USD ${it.price.toFixed(2)} × ${it.qty}</div>
             </div>
             <div style="text-align:right;">
               <div><strong>USD ${(it.price * it.qty).toFixed(2)}</strong></div>
@@ -227,17 +227,33 @@ function __init() {
             calculateTotals();
         }
 
-        function addToCart(id, name, price, qty) {
+        function addToCart(id, name, price, qty, sugar = "50") {
             qty = Math.max(1, parseInt(qty || 1, 10));
-            const existing = cart.find((c) => c.id === id);
+            const existing = cart.find((c) => c.id === id && c.sugar === sugar);
             if (existing) existing.qty += qty;
-            else cart.push({ id, name, price, qty });
+            else cart.push({ id, name, price, qty, sugar });
             renderCart();
         }
 
-        // attach add buttons
         menuList.querySelectorAll(".menu-card").forEach((card) => {
+            const sugarBtns = card.querySelectorAll(".sugar-btn");
             const addBtn = card.querySelector(".add-item-btn");
+
+            let selectedSugar = "50";
+
+            sugarBtns.forEach((btn) => {
+                if (btn.dataset.sugar === "50") btn.classList.add("active");
+            });
+
+            sugarBtns.forEach((btn) => {
+                btn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    sugarBtns.forEach((b) => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    selectedSugar = btn.dataset.sugar;
+                });
+            });
+
             if (!addBtn) return;
             addBtn.addEventListener("click", () => {
                 const id = card.dataset.id;
@@ -245,11 +261,10 @@ function __init() {
                 const price = parseFloat(card.dataset.price);
                 const qtyInput = card.querySelector(".item-qty");
                 const qty = qtyInput ? parseInt(qtyInput.value || 1, 10) : 1;
-                addToCart(id, name, price, qty);
+                addToCart(id, name, price, qty, selectedSugar);
             });
         });
 
-        // cart controls
         if (cartItemsContainer) {
             cartItemsContainer.addEventListener("click", (e) => {
                 const btn = e.target.closest("button");
@@ -274,12 +289,10 @@ function __init() {
                 renderCart();
             });
 
-        // save order to Firestore (with fallback)
         async function saveOrderToFirestore(order) {
             const fb = window.__FIREBASE;
             if (fb && fb.db && window.firebase) {
                 try {
-                    // use serverTimestamp for createdAt
                     const orderData = Object.assign({}, order, {
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
@@ -289,7 +302,6 @@ function __init() {
                     console.warn("Firestore save failed, falling back to localStorage", err);
                 }
             }
-            // fallback to localStorage
             try {
                 const existing = JSON.parse(localStorage.getItem("orders") || "[]");
                 existing.push(order);
@@ -301,7 +313,6 @@ function __init() {
             }
         }
 
-        // submit order
         orderForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             if (cart.length === 0) {
@@ -334,7 +345,6 @@ function __init() {
 
             await saveOrderToFirestore(order);
 
-            // clear and show success
             cart = [];
             renderCart();
             orderForm.reset();
@@ -404,7 +414,6 @@ function __init() {
             const tbody = document.createElement("tbody");
 
             docs.forEach((doc) => {
-                // when docs are DocumentSnapshots (from Firestore) use doc.data()
                 let data, id;
                 if (typeof doc.data === "function") {
                     data = doc.data();
@@ -413,20 +422,38 @@ function __init() {
                     data = doc;
                     id = doc.id || doc.id;
                 }
-                const itemsHtml = (data.items || []).map((i) => `${i.name} × ${i.qty}`).join("<br/>");
+
+                // Build customer info section
+                const customerHTML = `
+                    <div class="customer-info">
+                        <span class="customer-name">${data.name || "-"}</span>
+                        <span class="customer-location">${data.building || ""} / ${data.room || ""}</span>
+                        ${data.phone ? `<span class="customer-phone">${data.phone}</span>` : ""}
+                    </div>
+                `;
+
+                // Build items list with sugar levels
+                const itemsHTML = (data.items || [])
+                    .map((i) => `<div><strong>${i.name}</strong> (${i.sugar || "50"}% sugar) × ${i.qty}</div>`)
+                    .join("");
+
+                const itemsSection = `<div class="items-list">${itemsHTML || "-"}</div>`;
+
                 const tr = document.createElement("tr");
+                tr.setAttribute("data-order-id", id);
                 tr.innerHTML = `
-          <td>#${id}</td>
-          <td>${data.name || ""}<br/><small>${data.building || ""} / ${data.room || ""}${data.phone ? "<br/>" + data.phone : ""}</small></td>
-          <td>${itemsHtml}</td>
-          <td>USD ${Number(data.total || 0).toFixed(2)}</td>
-          <td>${formatDateFromFirestore(data.createdAt)}</td>
-          <td><span class="order-status ${data.status || "pending"}">${data.status || "pending"}</span></td>
-          <td>
-            <button class="btn btn-secondary-outline fulfill-btn" data-id="${id}">Mark fulfilled</button>
-            <button class="btn btn-secondary-outline delete-btn" data-id="${id}">Delete</button>
-          </td>
-        `;
+                    <td data-label="Order" class="order-id">#${id.substring(0, 12)}</td>
+                    <td data-label="Customer">${customerHTML}</td>
+                    <td data-label="Items">${itemsSection}</td>
+                    <td data-label="Total">USD ${Number(data.total || 0).toFixed(2)}</td>
+                    <td data-label="Time">${formatDateFromFirestore(data.createdAt)}</td>
+                    <td data-label="Status"><span class="order-status ${data.status || "pending"}">${data.status || "pending"}</span></td>
+                    <td data-label="Actions">
+                        <div class="order-actions">
+                            <button class="btn btn-secondary-outline fulfill-btn" data-id="${id}">Mark fulfilled</button>
+                        </div>
+                    </td>
+                `;
                 tbody.appendChild(tr);
             });
 
@@ -436,7 +463,6 @@ function __init() {
 
         async function attachRealtimeListener() {
             if (!fb || !fb.db) {
-                // fallback: read localStorage once
                 const local = JSON.parse(localStorage.getItem("orders") || "[]");
                 if (local.length) renderOrdersFromDocs(local.slice().reverse());
                 else ordersList.innerHTML = "<p class='muted'>No orders yet.</p>";
@@ -457,7 +483,6 @@ function __init() {
                 );
         }
 
-        // unlock using PIN
         staffLoginBtn.addEventListener("click", (e) => {
             e.preventDefault();
             const pin = (staffPinInput.value || "").trim();
@@ -472,21 +497,18 @@ function __init() {
             }
         });
 
-        // restore session
         if (sessionStorage.getItem("staffUnlocked") === "1") {
             staffLoginBox.style.display = "none";
             ordersPanel.style.display = "";
             attachRealtimeListener();
         }
 
-        // delegated actions (fulfill/delete)
         ordersList.addEventListener("click", async (evt) => {
             const btn = evt.target.closest("button");
             if (!btn) return;
             const id = btn.getAttribute("data-id");
             if (!id) return;
             if (!fb || !fb.db) {
-                // localStorage fallback
                 let orders = JSON.parse(localStorage.getItem("orders") || "[]");
                 const idx = orders.findIndex((o) => String(o.id) === String(id));
                 if (idx === -1) return;
@@ -494,22 +516,13 @@ function __init() {
                     orders[idx].status = "fulfilled";
                     localStorage.setItem("orders", JSON.stringify(orders));
                     renderOrdersFromDocs(orders.slice().reverse());
-                } else if (btn.classList.contains("delete-btn")) {
-                    if (!confirm("Delete this order?")) return;
-                    orders.splice(idx, 1);
-                    localStorage.setItem("orders", JSON.stringify(orders));
-                    renderOrdersFromDocs(orders.slice().reverse());
                 }
                 return;
             }
 
-            // Firestore actions
             try {
                 if (btn.classList.contains("fulfill-btn")) {
                     await fb.db.collection("orders").doc(id).update({ status: "fulfilled" });
-                } else if (btn.classList.contains("delete-btn")) {
-                    if (!confirm("Delete this order?")) return;
-                    await fb.db.collection("orders").doc(id).delete();
                 }
             } catch (err) {
                 console.error("Order action failed:", err);
@@ -541,7 +554,7 @@ function __init() {
                 ordersPanel.style.display = "none";
             });
     })();
-} // end __init
+}
 
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", __init);

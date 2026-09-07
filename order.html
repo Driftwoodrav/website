@@ -60,6 +60,53 @@
                 font-size: 0.92rem;
             }
 
+            /* Sugar Level Selector */
+            .sugar-level-group {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                width: 100%;
+            }
+
+            .sugar-level-label {
+                font-size: 0.75rem;
+                font-weight: 600;
+                color: #374151;
+            }
+
+            .sugar-level-buttons {
+                display: flex;
+                gap: 4px;
+                flex-wrap: wrap;
+            }
+
+            .sugar-btn {
+                flex: 1;
+                min-width: 35px;
+                padding: 4px 4px;
+                border: 1.5px solid #e5e7eb;
+                background: #ffffff;
+                border-radius: 6px;
+                font-weight: 600;
+                font-size: 0.7rem;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                color: #6b7280;
+                white-space: nowrap;
+            }
+
+            .sugar-btn:hover {
+                border-color: #ff69b4;
+                color: #ff69b4;
+            }
+
+            .sugar-btn.active {
+                background: #ffe5f0;
+                border-color: #ff69b4;
+                color: #ff69b4;
+                font-weight: 700;
+            }
+
             @media (max-width: 980px) {
                 .menu-thumb {
                     width: 64px;
@@ -72,6 +119,64 @@
                 .menu-card {
                     gap: 10px;
                     padding: 10px;
+                }
+
+                .sugar-btn {
+                    min-width: 32px;
+                    padding: 3px 3px;
+                    font-size: 0.65rem;
+                }
+
+                .sugar-level-label {
+                    font-size: 0.7rem;
+                }
+            }
+
+            @media (max-width: 600px) {
+                .menu-card {
+                    flex-direction: column;
+                    align-items: stretch;
+                    padding: 12px;
+                }
+
+                .menu-thumb {
+                    width: 100%;
+                    height: 140px;
+                    flex: none;
+                }
+
+                .menu-card .menu-actions {
+                    align-items: stretch;
+                    width: 100%;
+                }
+
+                .sugar-level-buttons {
+                    width: 100%;
+                }
+
+                .sugar-btn {
+                    flex: 1;
+                    min-width: auto;
+                    padding: 6px 4px;
+                    font-size: 0.75rem;
+                }
+
+                .menu-card .price {
+                    text-align: center;
+                }
+
+                .qty-group {
+                    width: 100%;
+                    display: flex;
+                    gap: 8px;
+                }
+
+                .qty-group .item-qty {
+                    flex: 1;
+                }
+
+                .qty-group .btn {
+                    flex: 1;
                 }
             }
         </style>
@@ -152,6 +257,19 @@
                                     </div>
                                     <div class="menu-actions">
                                         <div class="price">USD 2.50</div>
+
+                                        <!-- Sugar Level Selection -->
+                                        <div class="sugar-level-group">
+                                            <label class="sugar-level-label">Sugar</label>
+                                            <div class="sugar-level-buttons">
+                                                <button type="button" class="sugar-btn" data-sugar="0">0%</button>
+                                                <button type="button" class="sugar-btn" data-sugar="25">25%</button>
+                                                <button type="button" class="sugar-btn" data-sugar="50">50%</button>
+                                                <button type="button" class="sugar-btn" data-sugar="75">75%</button>
+                                                <button type="button" class="sugar-btn" data-sugar="100">100%</button>
+                                            </div>
+                                        </div>
+
                                         <div class="qty-group" style="display: flex; gap: 8px; align-items: center">
                                             <input
                                                 type="number"
@@ -181,6 +299,19 @@
                                     </div>
                                     <div class="menu-actions">
                                         <div class="price">USD 2.50</div>
+
+                                        <!-- Sugar Level Selection -->
+                                        <div class="sugar-level-group">
+                                            <label class="sugar-level-label">Sugar</label>
+                                            <div class="sugar-level-buttons">
+                                                <button type="button" class="sugar-btn" data-sugar="0">0%</button>
+                                                <button type="button" class="sugar-btn" data-sugar="25">25%</button>
+                                                <button type="button" class="sugar-btn" data-sugar="50">50%</button>
+                                                <button type="button" class="sugar-btn" data-sugar="75">75%</button>
+                                                <button type="button" class="sugar-btn" data-sugar="100">100%</button>
+                                            </div>
+                                        </div>
+
                                         <div class="qty-group" style="display: flex; gap: 8px; align-items: center">
                                             <input type="number" min="1" value="1" class="item-qty" />
                                             <button class="btn add-item-btn">Add</button>
@@ -205,6 +336,19 @@
                                     </div>
                                     <div class="menu-actions">
                                         <div class="price">USD 2.50</div>
+
+                                        <!-- Sugar Level Selection -->
+                                        <div class="sugar-level-group">
+                                            <label class="sugar-level-label">Sugar</label>
+                                            <div class="sugar-level-buttons">
+                                                <button type="button" class="sugar-btn" data-sugar="0">0%</button>
+                                                <button type="button" class="sugar-btn" data-sugar="25">25%</button>
+                                                <button type="button" class="sugar-btn" data-sugar="50">50%</button>
+                                                <button type="button" class="sugar-btn" data-sugar="75">75%</button>
+                                                <button type="button" class="sugar-btn" data-sugar="100">100%</button>
+                                            </div>
+                                        </div>
+
                                         <div class="qty-group" style="display: flex; gap: 8px; align-items: center">
                                             <input type="number" min="1" value="1" class="item-qty" />
                                             <button class="btn add-item-btn">Add</button>

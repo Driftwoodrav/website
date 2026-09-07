@@ -190,7 +190,7 @@ function __init() {
 
         function calculateTotals() {
             const subtotal = cart.reduce((s, it) => s + it.price * it.qty, 0);
-            const delivery = subtotal >= 10 ? 0 : subtotal === 0 ? 0 : 0.5;
+            const delivery = 0; // delivery forced to zero
             const total = subtotal + delivery;
             if (subtotalEl) subtotalEl.textContent = formatUSD(subtotal);
             if (deliveryEl) deliveryEl.textContent = formatUSD(delivery);
@@ -235,6 +235,7 @@ function __init() {
             renderCart();
         }
 
+        // attach add buttons
         menuList.querySelectorAll(".menu-card").forEach((card) => {
             const addBtn = card.querySelector(".add-item-btn");
             if (!addBtn) return;
@@ -248,6 +249,7 @@ function __init() {
             });
         });
 
+        // cart controls
         if (cartItemsContainer) {
             cartItemsContainer.addEventListener("click", (e) => {
                 const btn = e.target.closest("button");
@@ -272,10 +274,12 @@ function __init() {
                 renderCart();
             });
 
+        // save order to Firestore (with fallback)
         async function saveOrderToFirestore(order) {
             const fb = window.__FIREBASE;
             if (fb && fb.db && window.firebase) {
                 try {
+                    // use serverTimestamp for createdAt
                     const orderData = Object.assign({}, order, {
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
@@ -285,6 +289,7 @@ function __init() {
                     console.warn("Firestore save failed, falling back to localStorage", err);
                 }
             }
+            // fallback to localStorage
             try {
                 const existing = JSON.parse(localStorage.getItem("orders") || "[]");
                 existing.push(order);
@@ -296,6 +301,7 @@ function __init() {
             }
         }
 
+        // submit order
         orderForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             if (cart.length === 0) {
@@ -328,6 +334,7 @@ function __init() {
 
             await saveOrderToFirestore(order);
 
+            // clear and show success
             cart = [];
             renderCart();
             orderForm.reset();
@@ -357,7 +364,7 @@ function __init() {
     })();
 
     // -------------------------
-    // Staff PIN + Realtime Listener (Patched Safe Version)
+    // Staff PIN + Realtime Listener
     // -------------------------
     (function staffPage() {
         const staffLoginBox = document.getElementById("staffLogin");
@@ -373,17 +380,6 @@ function __init() {
         const expectedPin = window.STAFF_PIN || "";
         const fb = window.__FIREBASE;
         let unsubscribe = null;
-
-        function showLoader(show) {
-            if (show) {
-                ordersList.dataset._prev = ordersList.innerHTML;
-                ordersList.innerHTML = '<p class="muted">Loading orders…</p>';
-            } else {
-                if (ordersList.dataset._prev) {
-                    delete ordersList.dataset._prev;
-                }
-            }
-        }
 
         function formatDateFromFirestore(ts) {
             if (!ts) return "";
@@ -404,159 +400,111 @@ function __init() {
 
             const table = document.createElement("table");
             table.className = "order-table";
-            table.innerHTML = `
-                <thead>
-                    <tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Time</th><th>Status</th><th>Actions</th></tr>
-                </thead>
-                <tbody></tbody>
-            `;
-            const tbody = table.querySelector("tbody");
+            table.innerHTML = `<thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Time</th><th>Status</th><th>Actions</th></tr></thead>`;
+            const tbody = document.createElement("tbody");
 
-            docs.slice()
-                .reverse()
-                .forEach((o) => {
-                    let data = typeof o.data === "function" ? o.data() : o;
-                    let id = typeof o.id === "string" ? o.id : data.id || "";
-                    const itemsHtml = (data.items || []).map((it) => `${it.name} × ${it.qty}`).join("<br/>");
-                    const tr = document.createElement("tr");
-                    tr.innerHTML = `
-                    <td>#${id}</td>
-                    <td>${data.name || ""}<br/><small>${data.building || ""} / ${data.room || ""}${data.phone ? "<br/>" + data.phone : ""}</small></td>
-                    <td>${itemsHtml}</td>
-                    <td>USD ${Number(data.total || 0).toFixed(2)}</td>
-                    <td>${formatDateFromFirestore(data.createdAt)}</td>
-                    <td><span class="order-status ${data.status || "pending"}">${data.status || "pending"}</span></td>
-                    <td>
-                        <button class="btn btn-secondary-outline fulfill-btn" data-id="${id}">Mark fulfilled</button>
-                        <button class="btn btn-secondary-outline delete-btn" data-id="${id}">Delete</button>
-                    </td>
-                `;
-                    tbody.appendChild(tr);
-                });
+            docs.forEach((doc) => {
+                // when docs are DocumentSnapshots (from Firestore) use doc.data()
+                let data, id;
+                if (typeof doc.data === "function") {
+                    data = doc.data();
+                    id = doc.id;
+                } else {
+                    data = doc;
+                    id = doc.id || doc.id;
+                }
+                const itemsHtml = (data.items || []).map((i) => `${i.name} × ${i.qty}`).join("<br/>");
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+          <td>#${id}</td>
+          <td>${data.name || ""}<br/><small>${data.building || ""} / ${data.room || ""}${data.phone ? "<br/>" + data.phone : ""}</small></td>
+          <td>${itemsHtml}</td>
+          <td>USD ${Number(data.total || 0).toFixed(2)}</td>
+          <td>${formatDateFromFirestore(data.createdAt)}</td>
+          <td><span class="order-status ${data.status || "pending"}">${data.status || "pending"}</span></td>
+          <td>
+            <button class="btn btn-secondary-outline fulfill-btn" data-id="${id}">Mark fulfilled</button>
+            <button class="btn btn-secondary-outline delete-btn" data-id="${id}">Delete</button>
+          </td>
+        `;
+                tbody.appendChild(tr);
+            });
 
+            table.appendChild(tbody);
             ordersList.appendChild(table);
         }
 
-        async function fetchLocalOrders() {
-            try {
-                return JSON.parse(localStorage.getItem("orders") || "[]");
-            } catch {
-                return [];
-            }
-        }
-
         async function attachRealtimeListener() {
-            showLoader(true);
             if (!fb || !fb.db) {
-                const local = await fetchLocalOrders();
-                renderOrdersFromDocs(local);
-                showLoader(false);
+                // fallback: read localStorage once
+                const local = JSON.parse(localStorage.getItem("orders") || "[]");
+                if (local.length) renderOrdersFromDocs(local.slice().reverse());
+                else ordersList.innerHTML = "<p class='muted'>No orders yet.</p>";
                 return;
             }
-
-            try {
-                if (unsubscribe) unsubscribe();
-                let timedOut = false;
-                const watchdog = setTimeout(() => {
-                    timedOut = true;
-                    console.warn("Realtime listener taking too long — falling back to local orders.");
-                }, 8000);
-
-                unsubscribe = fb.db
-                    .collection("orders")
-                    .orderBy("createdAt", "desc")
-                    .onSnapshot(
-                        (snapshot) => {
-                            clearTimeout(watchdog);
-                            if (timedOut) {
-                                console.info("Realtime listener reconnected.");
-                            }
-                            renderOrdersFromDocs(snapshot.docs);
-                            showLoader(false);
-                        },
-                        async (err) => {
-                            clearTimeout(watchdog);
-                            console.error("Realtime listener error:", err);
-                            const local = await fetchLocalOrders();
-                            renderOrdersFromDocs(local);
-                            showLoader(false);
-                        }
-                    );
-            } catch (err) {
-                console.error("Failed to attach realtime listener:", err);
-                const local = await fetchLocalOrders();
-                renderOrdersFromDocs(local);
-                showLoader(false);
-            }
+            if (unsubscribe) unsubscribe();
+            unsubscribe = fb.db
+                .collection("orders")
+                .orderBy("createdAt", "desc")
+                .onSnapshot(
+                    (snapshot) => {
+                        renderOrdersFromDocs(snapshot.docs);
+                    },
+                    (err) => {
+                        console.error("Realtime listener error:", err);
+                        ordersList.innerHTML = "<p class='muted'>Realtime listener failed.</p>";
+                    }
+                );
         }
 
-        function lockUI() {
-            staffLoginBox.style.display = "";
-            ordersPanel.style.display = "none";
-        }
-        function unlockUI() {
-            staffLoginBox.style.display = "none";
-            ordersPanel.style.display = "";
-        }
-
-        if (sessionStorage.getItem("staffUnlocked") === "1") {
-            unlockUI();
-            setTimeout(() => attachRealtimeListener().catch(console.error), 50);
-        } else {
-            lockUI();
-        }
-
-        staffLoginBtn.addEventListener("click", async () => {
-            try {
-                const pin = (staffPinInput.value || "").trim();
-                if (!expectedPin) {
-                    alert("Staff PIN not configured.");
-                    return;
-                }
-                if (pin === expectedPin) {
-                    unlockUI();
-                    sessionStorage.setItem("staffUnlocked", "1");
-                    setTimeout(
-                        () =>
-                            attachRealtimeListener().catch((err) => {
-                                console.error("attachRealtimeListener failed:", err);
-                                alert("Could not load orders — check console.");
-                            }),
-                        50
-                    );
-                } else {
-                    alert("Incorrect PIN.");
-                }
-            } catch (err) {
-                console.error("Staff login error:", err);
-                alert("Unexpected error — check console.");
+        // unlock using PIN
+        staffLoginBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const pin = (staffPinInput.value || "").trim();
+            if (!expectedPin) return alert("Staff PIN not configured.");
+            if (pin === expectedPin) {
+                staffLoginBox.style.display = "none";
+                ordersPanel.style.display = "";
+                sessionStorage.setItem("staffUnlocked", "1");
+                attachRealtimeListener();
+            } else {
+                alert("Incorrect PIN.");
             }
         });
 
+        // restore session
+        if (sessionStorage.getItem("staffUnlocked") === "1") {
+            staffLoginBox.style.display = "none";
+            ordersPanel.style.display = "";
+            attachRealtimeListener();
+        }
+
+        // delegated actions (fulfill/delete)
         ordersList.addEventListener("click", async (evt) => {
-            try {
-                const btn = evt.target.closest("button");
-                if (!btn) return;
-                const id = btn.getAttribute("data-id");
-                if (!id) return;
-
-                if (!fb || !fb.db) {
-                    let orders = JSON.parse(localStorage.getItem("orders") || "[]");
-                    const idx = orders.findIndex((o) => String(o.id) === String(id));
-                    if (idx === -1) return;
-                    if (btn.classList.contains("fulfill-btn")) {
-                        orders[idx].status = "fulfilled";
-                        localStorage.setItem("orders", JSON.stringify(orders));
-                        renderOrdersFromDocs(orders.slice().reverse());
-                    } else if (btn.classList.contains("delete-btn")) {
-                        if (!confirm("Delete this order?")) return;
-                        orders.splice(idx, 1);
-                        localStorage.setItem("orders", JSON.stringify(orders));
-                        renderOrdersFromDocs(orders.slice().reverse());
-                    }
-                    return;
+            const btn = evt.target.closest("button");
+            if (!btn) return;
+            const id = btn.getAttribute("data-id");
+            if (!id) return;
+            if (!fb || !fb.db) {
+                // localStorage fallback
+                let orders = JSON.parse(localStorage.getItem("orders") || "[]");
+                const idx = orders.findIndex((o) => String(o.id) === String(id));
+                if (idx === -1) return;
+                if (btn.classList.contains("fulfill-btn")) {
+                    orders[idx].status = "fulfilled";
+                    localStorage.setItem("orders", JSON.stringify(orders));
+                    renderOrdersFromDocs(orders.slice().reverse());
+                } else if (btn.classList.contains("delete-btn")) {
+                    if (!confirm("Delete this order?")) return;
+                    orders.splice(idx, 1);
+                    localStorage.setItem("orders", JSON.stringify(orders));
+                    renderOrdersFromDocs(orders.slice().reverse());
                 }
+                return;
+            }
 
+            // Firestore actions
+            try {
                 if (btn.classList.contains("fulfill-btn")) {
                     await fb.db.collection("orders").doc(id).update({ status: "fulfilled" });
                 } else if (btn.classList.contains("delete-btn")) {
@@ -571,78 +519,27 @@ function __init() {
 
         if (refreshBtn)
             refreshBtn.addEventListener("click", async () => {
+                if (!fb || !fb.db) {
+                    const local = JSON.parse(localStorage.getItem("orders") || "[]");
+                    renderOrdersFromDocs(local.slice().reverse());
+                    return;
+                }
                 try {
-                    showLoader(true);
-                    if (!fb || !fb.db) {
-                        const local = await fetchLocalOrders();
-                        renderOrdersFromDocs(local.slice().reverse());
-                        showLoader(false);
-                        return;
-                    }
                     const snap = await fb.db.collection("orders").orderBy("createdAt", "desc").get();
                     renderOrdersFromDocs(snap.docs);
-                    showLoader(false);
                 } catch (err) {
-                    console.error("Refresh failed:", err);
-                    alert("Failed to refresh orders. Check console.");
-                    showLoader(false);
+                    console.error(err);
+                    alert("Failed to fetch orders.");
                 }
             });
 
         if (logoutBtn)
             logoutBtn.addEventListener("click", () => {
-                try {
-                    if (unsubscribe) unsubscribe();
-                    sessionStorage.removeItem("staffUnlocked");
-                    staffLoginBox.style.display = "";
-                    ordersPanel.style.display = "none";
-                } catch (err) {
-                    console.error("Logout error:", err);
-                }
+                if (unsubscribe) unsubscribe();
+                sessionStorage.removeItem("staffUnlocked");
+                staffLoginBox.style.display = "";
+                ordersPanel.style.display = "none";
             });
-    })();
-
-    // -------------------------
-    // Auto-mark nav link active based on current page or hash
-    // -------------------------
-    (function setActiveNavLink() {
-        try {
-            const links = Array.from(
-                document.querySelectorAll(".nav-right-container a.nav-item, .nav-right-container a.btn")
-            );
-            const currentPath = (location.pathname || "/").replace(/\/$/, "");
-
-            links.forEach((a) => {
-                const href = a.getAttribute("href");
-                if (!href) return;
-
-                if (href.startsWith("#")) {
-                    if (
-                        (currentPath === "" || currentPath.endsWith("index.html") || currentPath === "/") &&
-                        location.hash === href
-                    ) {
-                        a.classList.add("active");
-                    } else {
-                        a.classList.remove("active");
-                    }
-                    return;
-                }
-
-                const url = new URL(href, location.origin);
-                const hrefPath = (url.pathname || "/").replace(/\/$/, "");
-                const isIndexHere =
-                    (hrefPath === "/index.html" || hrefPath === "") &&
-                    (currentPath === "" || currentPath === "/index.html" || currentPath === "/");
-
-                if (isIndexHere || hrefPath === currentPath) {
-                    a.classList.add("active");
-                } else {
-                    a.classList.remove("active");
-                }
-            });
-        } catch (e) {
-            console.warn("setActiveNavLink error", e);
-        }
     })();
 } // end __init
 
